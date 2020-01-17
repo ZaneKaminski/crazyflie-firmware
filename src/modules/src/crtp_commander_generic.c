@@ -71,6 +71,8 @@ enum packet_type {
   hoverType         = 5,
   fullStateType     = 6,
   positionType      = 7,
+  rawMotorType      = 8,
+  rawRatioType      = 9
 };
 
 /* ---===== 2 - Decoding functions =====--- */
@@ -83,6 +85,7 @@ enum packet_type {
  */
 static void stopDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
+  memset(setpoint, 0, sizeof(setpoint_t));
   return;
 }
 
@@ -97,6 +100,8 @@ struct velocityPacket_s {
 } __attribute__((packed));
 static void velocityDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
+  memset(setpoint, 0, sizeof(setpoint_t));
+
   const struct velocityPacket_s *values = data;
 
   ASSERT(datalen == sizeof(struct velocityPacket_s));
@@ -125,6 +130,8 @@ struct zDistancePacket_s {
 } __attribute__((packed));
 static void zDistanceDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
+  memset(setpoint, 0, sizeof(setpoint_t));
+
   const struct zDistancePacket_s *values = data;
 
 
@@ -185,6 +192,8 @@ static inline float getChannelUnitMultiplier(uint16_t channelValue, uint16_t cha
 
 static void cppmEmuDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
+  memset(setpoint, 0, sizeof(setpoint_t));
+
   bool isSelfLevelEnabled = true;
 
   ASSERT(datalen >= 9); // minimum 9 bytes expected - 1byte header + four 2byte channels
@@ -243,6 +252,8 @@ struct altHoldPacket_s {
 } __attribute__((packed));
 static void altHoldDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
+  memset(setpoint, 0, sizeof(setpoint_t));
+
   const struct altHoldPacket_s *values = data;
 
   ASSERT(datalen == sizeof(struct altHoldPacket_s));
@@ -276,6 +287,8 @@ struct hoverPacket_s {
 } __attribute__((packed));
 static void hoverDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
+  memset(setpoint, 0, sizeof(setpoint_t));
+
   const struct hoverPacket_s *values = data;
 
   ASSERT(datalen == sizeof(struct hoverPacket_s));
@@ -313,6 +326,8 @@ struct fullStatePacket_s {
 } __attribute__((packed));
 static void fullStateDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
+  memset(setpoint, 0, sizeof(setpoint_t));
+
   const struct fullStatePacket_s *values = data;
 
   ASSERT(datalen == sizeof(struct fullStatePacket_s));
@@ -351,6 +366,8 @@ static void fullStateDecoder(setpoint_t *setpoint, uint8_t type, const void *dat
  } __attribute__((packed));
 static void positionDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
+  memset(setpoint, 0, sizeof(setpoint_t));
+
   const struct positionPacket_s *values = data;
 
   setpoint->mode.x = modeAbs;
@@ -367,6 +384,37 @@ static void positionDecoder(setpoint_t *setpoint, uint8_t type, const void *data
   setpoint->attitude.yaw = values->yaw;
 }
 
+/* rawMotorDecoder
+ * FIXME: documentation
+ */
+ struct rawMotorPacket_s {
+   // Motor power biases  
+   uint32_t m1, m2, m3, m4;
+ } __attribute__((packed));
+static void rawMotorDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
+{
+  const struct rawMotorPacket_s *values = data;
+
+  setpoint->bias.m1 = values->m1;
+  setpoint->bias.m2 = values->m2;
+  setpoint->bias.m3 = values->m3;
+  setpoint->bias.m4 = values->m4;
+}
+
+/* rawMotorDecoder
+ * FIXME: documentation
+ */
+ struct rawRatioPacket_s {
+   // Motor power sum ratio  
+   float ratio;
+ } __attribute__((packed));
+static void rawRatioDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
+{
+  const struct rawRatioPacket_s *values = data;
+
+  setpoint->bias.ratio = values->ratio;
+}
+
  /* ---===== 3 - packetDecoders array =====--- */
 const static packetDecoder_t packetDecoders[] = {
   [stopType]          = stopDecoder,
@@ -377,6 +425,8 @@ const static packetDecoder_t packetDecoders[] = {
   [hoverType]         = hoverDecoder,
   [fullStateType]     = fullStateDecoder,
   [positionType]      = positionDecoder,
+  [rawMotorType]      = rawMotorDecoder,
+  [rawRatioType]      = rawRatioDecoder
 };
 
 /* Decoder switch */
@@ -391,8 +441,6 @@ void crtpCommanderGenericDecodeSetpoint(setpoint_t *setpoint, CRTPPacket *pk)
   }
 
   uint8_t type = pk->data[0];
-
-  memset(setpoint, 0, sizeof(setpoint_t));
 
   if (type<nTypes && (packetDecoders[type] != NULL)) {
     packetDecoders[type](setpoint, type, ((char*)pk->data)+1, pk->size-1);

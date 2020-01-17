@@ -285,7 +285,7 @@ static void stabilizerTask(void* param)
       if (emergencyStop) {
         powerStop();
       } else {
-        powerDistribution(&control);
+        powerDistribution(&control, &setpoint.bias);
       }
 
       // Log data to uSD card if configured

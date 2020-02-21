@@ -30,7 +30,7 @@
 
 void powerDistributionInit(void);
 bool powerDistributionTest(void);
-void powerDistribution(const control_t *control, const motorbias_t *bias);
+void powerDistribution(const control_t *control);
 void powerStop();
 
 

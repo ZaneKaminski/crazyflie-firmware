@@ -75,7 +75,7 @@ void powerStop()
   motorsSetRatio(MOTOR_M4, 0);
 }
 
-void powerDistribution(const control_t *control, const motorbias_t *bias)
+void powerDistribution(const control_t *control)
 {
   #ifdef QUAD_FORMATION_X
     int16_t r = control->roll / 2.0f;
@@ -104,14 +104,10 @@ void powerDistribution(const control_t *control, const motorbias_t *bias)
   }
   else
   {
-    motorsSetRatio(MOTOR_M1, 
-      (1-bias->ratio) * motorPower.m1 + bias->ratio * bias->m1);
-    motorsSetRatio(MOTOR_M2, 
-      (1-bias->ratio) * motorPower.m2 + bias->ratio * bias->m2);
-    motorsSetRatio(MOTOR_M3, 
-      (1-bias->ratio) * motorPower.m3 + bias->ratio * bias->m3);
-    motorsSetRatio(MOTOR_M4, 
-      (1-bias->ratio) * motorPower.m4 + bias->ratio * bias->m4);
+    motorsSetRatio(MOTOR_M1, motorPower.m1);
+    motorsSetRatio(MOTOR_M2, motorPower.m2);
+    motorsSetRatio(MOTOR_M3, motorPower.m3);
+    motorsSetRatio(MOTOR_M4, motorPower.m4);
   }
 }
 

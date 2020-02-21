@@ -168,11 +168,6 @@ typedef enum mode_e {
   modeVelocity
 } stab_mode_t;
 
-typedef struct motorbias_s {
-  uint32_t m1, m2, m3, m4;
-  float ratio;
-} motorbias_t;
-
 typedef struct setpoint_s {
   uint32_t timestamp;
 
@@ -194,8 +189,6 @@ typedef struct setpoint_s {
     stab_mode_t yaw;
     stab_mode_t quat;
   } mode;
-
-  motorbias_t bias;
 } setpoint_t;
 
 /** Estimate of position */

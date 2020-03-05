@@ -64,6 +64,8 @@
 #include "deck.h"
 #include "extrx.h"
 
+#include "reservoir.h"
+
 /* Private variable */
 static bool selftestPassed;
 static bool canFly;
@@ -174,6 +176,9 @@ void systemTask(void *arg)
 #ifdef PROXIMITY_ENABLED
   proximityInit();
 #endif
+
+  // Initialize the reservoir
+  resInit();
 
   //Test the modules
   pass &= systemTest();

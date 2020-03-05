@@ -24,7 +24,8 @@
  * reservoir.h - Reservoir type definitions
  */
 
-#include "stdint.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 #ifndef __RESERVOIR_H__
 #define __RESERVOIR_H__
@@ -66,17 +67,25 @@ typedef struct reservoir_s {
 	res_output_connection_t *outputs;
 } reservoir_t;
 
-void res_init();
+void resInit();
 
-void res_alloc_reservoir(res_index_t res, res_neuron_count_t size, res_connectivity_t connectivity);
+void res_alloc_reservoir(res_index_t res, 
+	res_neuron_count_t size,
+	res_connectivity_t connectivity);
 
-void res_set_input_weight(res_index_t res, res_input_index_t input, res_neuron_index_t neuron, res_weight_t weight);
+void res_set_input_weight(res_index_t res,
+	res_input_index_t input, res_neuron_index_t neuron,
+	res_weight_t weight);
 
-void res_append_neuron_weight(res_index_t res, res_connection_index_t index,
-	res_neuron_index_t output, res_neuron_index_t input, res_weight_t weight);
+void res_append_internal_weight(res_index_t res,
+	res_connection_index_t index,
+	res_neuron_index_t output, res_neuron_index_t input, 
+	res_weight_t weight);
 
-void res_set_output_weight(res_index_t res, res_output_index_t output, res_neuron_index_t neuron, res_weight_t weight);
+void res_set_output_weight(res_index_t res, 
+	res_output_index_t output, res_neuron_index_t neuron, 
+	res_weight_t weight);
 
-uint8_t res_get_checksum(res_index_t res);
+uint8_t res_compute_checksum();
 
 #endif //__RESERVOIR_H__

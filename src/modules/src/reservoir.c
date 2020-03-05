@@ -61,10 +61,10 @@ void res_alloc_reservoir(res_index_t res, res_neuron_count_t size, res_connectiv
 	res_table[res].inputs = (res_input_connection_t*)res_index;
 
 	res_table[res].outputs = (res_output_connection_t*)((void*)(res_table[res].inputs) +
-		sizeof(res_output_connection_t) * size);
+		sizeof(res_input_connection_t) * size);
 
 	res_table[res].internal = (res_internal_connection_t*)((void*)(res_table[res].outputs) +
-		sizeof(res_input_connection_t) * size);
+		sizeof(res_output_connection_t) * size);
 
 	res_index = (void*)(res_table[res].internal) + 
 		sizeof(res_internal_connection_t) * connectivity;

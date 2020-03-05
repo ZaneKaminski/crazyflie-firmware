@@ -44,7 +44,6 @@ static bool isInit;
 void resInit() {
 	if(isInit) { return; }
 
-	crtpReservoirInit();
 	res_checksum = 0;
 	res_index = res_data;
 
@@ -52,8 +51,11 @@ void resInit() {
 	for (int i = 0; i < 16; i++) {
 		res_table[i] = (reservoir_t){0};
 	}
+
 	// Zero reservoir data
 	memset(res_data, 0, RES_DATA_SIZE);
+
+	crtpReservoirInit();
 
 	isInit = true;
 }

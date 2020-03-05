@@ -46,17 +46,17 @@ typedef float res_weight_t;
 
 typedef struct res_input_connection_s {
 	res_weight_t weights[RES_NUM_INPUTS]; 
-} res_input_connection_t;
+} __attribute__((packed)) res_input_connection_t;
 
 typedef struct res_internal_connection_s {
 	res_weight_t weight;
 	res_neuron_index_t input;
 	res_neuron_index_t output;
-} res_internal_connection_t;
+} __attribute__((packed)) res_internal_connection_t;
 
 typedef struct res_output_connection_s {
 	res_weight_t weights[RES_NUM_OUTPUTS]; 
-} res_output_connection_t;
+} __attribute__((packed)) res_output_connection_t;
 
 typedef struct reservoir_s {
 	res_neuron_count_t size;

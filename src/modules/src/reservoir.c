@@ -111,8 +111,7 @@ void res_set_output_weight(res_index_t res,
 void res_compute_checksum() {
 	uint32_t result = 0;
 	for (int i = 0; i < RES_DATA_SIZE; i++) { 
-		//result = 0xFF & (result + (result ^ ((uint8_t*)res_data)[i]));
-		result = (result ^ ((uint8_t*)res_data)[i]) + ((uint8_t*)res_data)[i];
+		result = 0xFFFFFFFF & ((result ^ ((uint8_t*)res_data)[i]) + ((uint8_t*)res_data)[i]);
 	}
 	res_checksum = result;
 }

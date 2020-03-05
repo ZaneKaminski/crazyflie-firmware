@@ -41,7 +41,7 @@ static reservoir_t res_table[16];
 
 static void* const res_data = (void*)0x10000000;
 static void *res_index;
-uint8_t res_checksum;
+uint32_t res_checksum;
 static bool isInit;
 
 void resInit() {
@@ -118,9 +118,13 @@ void res_set_output_weight(res_index_t res,
 }
 
 void res_compute_checksum() {
-	uint8_t result = 0;
+	uint32_t result = 0;
 	for (int i = 0; i < RES_DATA_SIZE; i++) { 
-		result ^= ((uint8_t*)res_data)[result];
+		//result = 0xFF & (result + (result ^ ((uint8_t*)res_data)[i]));
+		result = (result ^ ((uint8_t*)res_data)[i]) + ((uint8_t*)res_data)[i];
+	}
+	res_checksum = result;
+}
 	}
 }
 
@@ -128,7 +132,9 @@ void res_compute_checksum() {
 LOG_GROUP_START(reservoir)
 LOG_ADD(LOG_UINT32, data, &res_data)
 LOG_ADD(LOG_UINT32, index, &res_index)
+LOG_ADD(LOG_UINT8, size0, (&(res_table[0].size)))
+LOG_ADD(LOG_UINT16, conn0, (&(res_table[0].connectivity)))
 LOG_ADD(LOG_UINT32, input0, (&(res_table[0].inputs)))
 LOG_ADD(LOG_UINT32, output0, (&(res_table[0].outputs)))
-LOG_ADD(LOG_UINT8, checksum, &res_checksum)
+LOG_ADD(LOG_UINT32, checksum, &res_checksum)
 LOG_GROUP_STOP(reservoir)

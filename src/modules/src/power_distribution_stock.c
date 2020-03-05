@@ -49,6 +49,13 @@ static struct {
   uint16_t m2;
   uint16_t m3;
   uint16_t m4;
+} motorPower16;
+
+static struct {
+  uint16_t m1;
+  uint16_t m2;
+  uint16_t m3;
+  uint16_t m4;
 } motorPowerSet;
 
 void powerDistributionInit(void)
@@ -95,6 +102,11 @@ void powerDistribution(const control_t *control)
                                control->yaw);
   #endif
 
+  motorPower16.m1 = motorPower.m1;
+  motorPower16.m2 = motorPower.m2;
+  motorPower16.m3 = motorPower.m3;
+  motorPower16.m4 = motorPower.m4;
+
   if (motorSetEnable)
   {
     motorsSetRatio(MOTOR_M1, motorPowerSet.m1);
@@ -124,4 +136,8 @@ LOG_ADD(LOG_INT32, m4, &motorPower.m4)
 LOG_ADD(LOG_INT32, m1, &motorPower.m1)
 LOG_ADD(LOG_INT32, m2, &motorPower.m2)
 LOG_ADD(LOG_INT32, m3, &motorPower.m3)
+LOG_ADD(LOG_INT32, m4_16, &motorPower.m4)
+LOG_ADD(LOG_INT32, m1_16, &motorPower.m1)
+LOG_ADD(LOG_INT32, m2_16, &motorPower.m2)
+LOG_ADD(LOG_INT32, m3_16, &motorPower.m3)
 LOG_GROUP_STOP(motor)

@@ -11,11 +11,15 @@
   subs:
     - {page_id: deck}
     - {page_id: logparam}
-- title: Explanation Functionalities
+    - {page_id: app_layer}
+- title: Functional areas
   subs:
     - {page_id: sensor_to_control}
     - {page_id: ctrp_index}
     - {page_id: deck_memory_format}
+    - {page_id: p2p_api}
+    - {page_id: trajectory_formats}
+    - {page_id: light_house_overview}
 - title: Development Instructions
   subs:
     - {page_id: starting_development}

@@ -30,9 +30,12 @@
 
 #include <string.h>
 
+#include "log.h"
+
 #include "crtp_reservoir.h"
 
 #define RES_DATA_SIZE 65536
+#define RES_NUM_RESERVOIRS 16
 
 static reservoir_t res_table[16];
 
@@ -120,3 +123,12 @@ void res_compute_checksum() {
 		result ^= ((uint8_t*)res_data)[result];
 	}
 }
+
+
+LOG_GROUP_START(reservoir)
+LOG_ADD(LOG_UINT32, data, &res_data)
+LOG_ADD(LOG_UINT32, index, &res_index)
+LOG_ADD(LOG_UINT32, input0, (&(res_table[0].inputs)))
+LOG_ADD(LOG_UINT32, output0, (&(res_table[0].outputs)))
+LOG_ADD(LOG_UINT8, checksum, &res_checksum)
+LOG_GROUP_STOP(reservoir)

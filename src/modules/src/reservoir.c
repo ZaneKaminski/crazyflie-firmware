@@ -80,7 +80,8 @@ void res_alloc_reservoir(res_index_t res, res_neuron_count_t size, res_connectiv
 void res_set_input_weight(res_index_t res,
 	res_input_index_t input, res_neuron_index_t neuron, 
 	res_weight_t weight) {
-	if (input < RES_NUM_INPUTS && neuron < res_table[res].size) {
+	if (res < RES_NUM_RESERVOIRS && 
+		input < RES_NUM_INPUTS && neuron < res_table[res].size) {
 		res_table[res].inputs[neuron].weights[input] = weight;
 	}
 }
@@ -88,7 +89,8 @@ void res_set_input_weight(res_index_t res,
 void res_append_internal_weight(res_index_t res, res_connection_index_t index,
 	res_neuron_index_t output, res_neuron_index_t input, 
 	res_weight_t weight) {
-	if (index < res_table[res].connectivity &&
+	if (res < RES_NUM_RESERVOIRS &&
+		index < res_table[res].connectivity &&
 		output < res_table[res].size && input < res_table[res].size &&
 		output >= res_table[res].current_output) {
 		res_table[res].current_output = output;
@@ -101,7 +103,8 @@ void res_append_internal_weight(res_index_t res, res_connection_index_t index,
 void res_set_output_weight(res_index_t res,
 	res_output_index_t output, res_neuron_index_t neuron,
 	res_weight_t weight) {
-	if (output < RES_NUM_OUTPUTS && neuron < res_table[res].size) {
+	if (res < RES_NUM_RESERVOIRS && 
+		output < RES_NUM_OUTPUTS && neuron < res_table[res].size) {
 		res_table[res].outputs[neuron].weights[output] = weight;
 	}
 }

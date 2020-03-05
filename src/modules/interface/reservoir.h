@@ -33,14 +33,12 @@
 #define RES_NUM_OUTPUTS	4
 
 typedef uint8_t res_index_t;
-
 typedef uint8_t res_neuron_count_t;
 typedef uint16_t res_connectivity_t;
 
 typedef uint8_t res_input_index_t;
 typedef uint8_t res_neuron_index_t;
 typedef uint8_t res_output_index_t;
-
 typedef uint16_t res_connection_index_t;
 
 typedef float res_weight_t;
@@ -54,7 +52,6 @@ typedef struct res_internal_connection_s {
 	res_neuron_index_t output;
 	res_weight_t weight;
 } res_internal_connection_t;
-
 
 typedef struct res_output_connection_s {
 	res_weight_t weights[RES_NUM_OUTPUTS]; 

@@ -71,10 +71,6 @@ typedef struct crtp_reservoir_message_set_output_s {
 	res_weight_t weight;
 } __attribute__((packed)) crtp_reservoir_message_set_output_t;
 
-typedef struct crtp_reservoir_message_compute_checksum_s {
-	crtp_reservoir_message_type_t type;
-} crtp_reservoir_message_compute_checksum_t;
-
 void crtpReservoirInit(void);
 
 #endif /* CRTP_RESERVOIR_H_ */

@@ -72,6 +72,8 @@ static void processReservoirPacket(CRTPPacket* pk)
 void crtpReservoirInit(void)
 {
   if(isInit) { return; }
+
+  res_checksum = 0;
   
   crtpInit();
 

@@ -63,6 +63,9 @@ static void processReservoirPacket(CRTPPacket* pk)
       } case CRTP_RESERVOIR_MESSAGE_COMPUTE_CHECKSUM: {
         res_compute_checksum();
         break;
+      } case CRTP_RESERVOIR_MESSAGE_CLEAR: {
+        res_clear();
+        break;
       }
     }
   }

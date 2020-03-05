@@ -47,16 +47,7 @@ static bool isInit;
 void resInit() {
 	if(isInit) { return; }
 
-	res_checksum = 0;
-	res_index = res_data;
-
-	// Zero reservoir table
-	for (int i = 0; i < 16; i++) {
-		res_table[i] = (reservoir_t){0};
-	}
-
-	// Zero reservoir data
-	memset(res_data, 0, RES_DATA_SIZE);
+	res_clear();
 
 	crtpReservoirInit();
 
@@ -125,7 +116,18 @@ void res_compute_checksum() {
 	}
 	res_checksum = result;
 }
+
+void res_clear() {
+	res_checksum = 0;
+	res_index = res_data;
+
+	// Zero reservoir table
+	for (int i = 0; i < 16; i++) {
+		res_table[i] = (reservoir_t){0};
 	}
+
+	// Zero reservoir data
+	memset(res_data, 0, RES_DATA_SIZE);
 }
 
 

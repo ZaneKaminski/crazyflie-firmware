@@ -88,4 +88,6 @@ void res_set_output_weight(res_index_t res,
 
 void res_compute_checksum();
 
+void res_clear();
+
 #endif //__RESERVOIR_H__

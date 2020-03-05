@@ -49,9 +49,9 @@ typedef struct res_input_connection_s {
 } res_input_connection_t;
 
 typedef struct res_internal_connection_s {
+	res_weight_t weight;
 	res_neuron_index_t input;
 	res_neuron_index_t output;
-	res_weight_t weight;
 } res_internal_connection_t;
 
 typedef struct res_output_connection_s {

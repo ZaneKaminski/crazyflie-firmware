@@ -44,7 +44,7 @@ typedef struct crtp_reservoir_message_alloc_reservoir_s {
 	res_index_t res;
 	res_neuron_count_t size;
 	res_connectivity_t connectivity;
-} crtp_reservoir_message_alloc_reservoir_t;
+} __attribute__((packed)) crtp_reservoir_message_alloc_reservoir_t;
 
 typedef struct crtp_reservoir_message_set_input_s {
 	crtp_reservoir_message_type_t type;
@@ -52,7 +52,7 @@ typedef struct crtp_reservoir_message_set_input_s {
 	res_input_index_t input;
 	res_neuron_index_t neuron;
 	res_weight_t weight;
-} crtp_reservoir_message_set_input_t;
+} __attribute__((packed)) crtp_reservoir_message_set_input_t;
 
 typedef struct crtp_reservoir_message_append_internal_s {
 	crtp_reservoir_message_type_t type;
@@ -61,7 +61,7 @@ typedef struct crtp_reservoir_message_append_internal_s {
 	res_neuron_index_t output;
 	res_neuron_index_t input;
 	res_weight_t weight;
-} crtp_reservoir_message_append_internal_t;
+} __attribute__((packed)) crtp_reservoir_message_append_internal_t;
 
 typedef struct crtp_reservoir_message_set_output_s {
 	crtp_reservoir_message_type_t type;
@@ -69,7 +69,7 @@ typedef struct crtp_reservoir_message_set_output_s {
 	res_output_index_t output;
 	res_neuron_index_t neuron;
 	res_weight_t weight;
-} crtp_reservoir_message_set_output_t;
+} __attribute__((packed)) crtp_reservoir_message_set_output_t;
 
 typedef struct crtp_reservoir_message_compute_checksum_s {
 	crtp_reservoir_message_type_t type;

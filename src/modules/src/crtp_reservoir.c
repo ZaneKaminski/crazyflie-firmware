@@ -34,7 +34,6 @@
 #include "reservoir.h"
 #include "kalman_core.h"
 
-uint8_t res_checksum;
 static bool isInit;
 
 static void processReservoirPacket(CRTPPacket* pk)
@@ -62,7 +61,7 @@ static void processReservoirPacket(CRTPPacket* pk)
         res_set_output_weight(m->res, m->output, m->neuron, m->weight);
         break;
       } case CRTP_RESERVOIR_MESSAGE_COMPUTE_CHECKSUM: {
-        res_checksum = res_compute_checksum();
+        res_compute_checksum();
         break;
       }
     }
@@ -72,8 +71,6 @@ static void processReservoirPacket(CRTPPacket* pk)
 void crtpReservoirInit(void)
 {
   if(isInit) { return; }
-
-  res_checksum = 0;
   
   crtpInit();
 
@@ -81,7 +78,3 @@ void crtpReservoirInit(void)
 
   isInit = true;
 }
-
-LOG_GROUP_START(reservoir)
-LOG_ADD(LOG_UINT8, checksum, &res_checksum)
-LOG_GROUP_STOP(reservoir)

@@ -86,6 +86,6 @@ void res_set_output_weight(res_index_t res,
 	res_output_index_t output, res_neuron_index_t neuron, 
 	res_weight_t weight);
 
-uint8_t res_compute_checksum();
+void res_compute_checksum();
 
 #endif //__RESERVOIR_H__

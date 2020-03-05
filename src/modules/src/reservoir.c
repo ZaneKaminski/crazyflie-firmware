@@ -38,13 +38,16 @@ static reservoir_t res_table[16];
 
 static void* const res_data = (void*)0x10000000;
 static void *res_index;
+uint8_t res_checksum;
 static bool isInit;
 
 void resInit() {
 	if(isInit) { return; }
 
 	crtpReservoirInit();
+	res_checksum = 0;
 	res_index = res_data;
+
 	// Zero reservoir table
 	for (int i = 0; i < 16; i++) {
 		res_table[i] = (reservoir_t){0};
@@ -109,10 +112,9 @@ void res_set_output_weight(res_index_t res,
 	}
 }
 
-uint8_t res_compute_checksum() {
+void res_compute_checksum() {
 	uint8_t result = 0;
 	for (int i = 0; i < RES_DATA_SIZE; i++) { 
 		result ^= ((uint8_t*)res_data)[result];
 	}
-	return result;
 }

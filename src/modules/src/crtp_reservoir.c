@@ -80,6 +80,6 @@ void crtpReservoirInit(void)
   isInit = true;
 }
 
-LOG_GROUP_START(res)
+LOG_GROUP_START(reservoir)
 LOG_ADD(LOG_UINT8, checksum, &res_checksum)
-LOG_GROUP_STOP(res)
+LOG_GROUP_STOP(reservoir)

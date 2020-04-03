@@ -7,7 +7,7 @@
  *
  * Crazyflie control firmware
  *
- * Copyright (C) 2018 Bitcraze AB
+ * Copyright (C) 2019 - 2020 Bitcraze AB
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,23 +22,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * clockCorrectionEngine.h - utitlity for keeping track of clock drift
- * in UWB positioning system.
+ * lighthouse_core.h - central part of the lighthouse positioning system
  */
 
-#ifndef clockCorrectionEngine_h
-#define clockCorrectionEngine_h
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
 
 typedef struct {
-  double clockCorrection;
-  unsigned int clockCorrectionBucket;
-} clockCorrectionStorage_t;
+  bool isSyncFrame;
+  uint8_t sensor;
 
-double clockCorrectionEngineGet(const clockCorrectionStorage_t* storage);
-double clockCorrectionEngineCalculate(const uint64_t new_t_in_cl_reference, const uint64_t old_t_in_cl_reference, const uint64_t new_t_in_cl_x, const uint64_t old_t_in_cl_x, const uint64_t mask);
-bool clockCorrectionEngineUpdate(clockCorrectionStorage_t* storage, const double clockCorrectionCandidate);
+  // V1 base station data --------
+  uint32_t timestamp;
+  uint16_t width;
 
-#endif /* clockCorrectionEngine_h */
+  // V2 base station data --------
+  uint32_t beamData;
+  uint32_t offset;
+  bool channelFound;
+  // Channel is zero indexed (0-15) here, while it is one indexed in the base station config (1 - 16)
+  uint8_t channel;
+  uint8_t slowbit;
+} lighthouseUartFrame_t;
+
+typedef struct {
+  int sampleCount;
+  int hitCount;
+} lighthouseBsIdentificationData_t;
+
+typedef enum {
+    lighthouseBsTypeUnknown = 0,
+    lighthouseBsTypeV1 = 1,
+    lighthouseBsTypeV2 = 2,
+} lighthouseBaseStationType_t;
+
+void lighthouseCoreTask(void *param);

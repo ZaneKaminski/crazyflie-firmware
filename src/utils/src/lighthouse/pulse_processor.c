@@ -1,3 +1,31 @@
+/**
+ * ,---------,       ____  _ __
+ * |  ,-^-,  |      / __ )(_) /_______________ _____  ___
+ * | (  O  ) |     / __  / / __/ ___/ ___/ __ `/_  / / _ \
+ * | / ,--´  |    / /_/ / / /_/ /__/ /  / /_/ / / /_/  __/
+ *    +------`   /_____/_/\__/\___/_/   \__,_/ /___/\___/
+ *
+ * Crazyflie control firmware
+ *
+ * Copyright (C) 2019 Bitcraze AB
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, in version 3.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * pulse_processor.c - pulse decoding for lighthouse V1 base stations
+ *
+ */
+
 #include "pulse_processor.h"
 
 #include <string.h>
@@ -9,25 +37,25 @@
 #endif
 
 // Decoding contants
-// Times are expressed in a 48MHz clock
-#define FRAME_LENGTH 400000    // 8.333ms
-#define SWEEP_MAX_WIDTH 1024   // 20us
+// Times are expressed in a 24MHz clock
+#define FRAME_LENGTH 200000    // 8.333ms
+#define SWEEP_MAX_WIDTH 512    // 20us
 
-#define SYNC_DIVIDER 500
-#define SYNC_BASE_WIDTH (2500 + (SYNC_DIVIDER / 2))
-#define SYNC_MIN_WIDTH (2500 - SYNC_DIVIDER)
-#define SYNC_MAX_WIDTH (2500 + SYNC_DIVIDER * 8)
+#define SYNC_DIVIDER 250
+#define SYNC_BASE_WIDTH (1250 + (SYNC_DIVIDER / 2))
+#define SYNC_MIN_WIDTH (1250 - SYNC_DIVIDER)
+#define SYNC_MAX_WIDTH (1250 + SYNC_DIVIDER * 8)
 
-#define SYNC_SEPARATION 20000
-#define SYNC_SEPARATION_MAX_DISPERSION 5000
+#define SYNC_SEPARATION 10000
+#define SYNC_SEPARATION_MAX_DISPERSION 2500
 #define SYNC_MIN_SEPARATION (SYNC_SEPARATION - SYNC_SEPARATION_MAX_DISPERSION)
 #define SYNC_MAX_SEPARATION (SYNC_SEPARATION + SYNC_SEPARATION_MAX_DISPERSION)
 
-#define SENSOR_MAX_DISPERTION 20
-#define MAX_FRAME_LENGTH_NOISE 800
+#define SENSOR_MAX_DISPERTION 10
+#define MAX_FRAME_LENGTH_NOISE 400
 
-#define FRAME_WIDTH_MIN 790000
-#define FRAME_WIDTH_MAX 810000
+#define FRAME_WIDTH_MIN 395000
+#define FRAME_WIDTH_MAX 405000
 
 // Utility functions and macros
 // #define TS_DIFF(X, Y) ((X-Y)&((1<<TIMESTAMP_BITWIDTH)-1))

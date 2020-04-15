@@ -67,6 +67,7 @@
 #include "app.h"
 #include "static_mem.h"
 
+#include "blob.h"
 #include "reservoir.h"
 
 /* Private variable */
@@ -185,8 +186,11 @@ void systemTask(void *arg)
   proximityInit();
 #endif
 
-  // Initialize the reservoir
-  resInit();
+  // Initialize the blob module 
+  blob_init();
+
+  // Initialize the reservoir module
+  res_init();
 
   //Test the modules
   pass &= systemTest();

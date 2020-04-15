@@ -67,7 +67,7 @@ typedef struct reservoir_s {
 	res_output_connection_t *outputs;
 } reservoir_t;
 
-void resInit();
+void res_init();
 
 void res_alloc_reservoir(res_index_t res, 
 	res_neuron_count_t size,

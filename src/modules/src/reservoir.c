@@ -44,7 +44,7 @@ static void *res_index;
 uint32_t res_checksum;
 static bool isInit;
 
-void resInit() {
+void res_init() {
 	if(isInit) { return; }
 
 	res_clear();

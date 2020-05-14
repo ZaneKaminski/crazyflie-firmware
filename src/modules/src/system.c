@@ -190,7 +190,7 @@ void systemTask(void *arg)
   blob_init();
 
   // Initialize the reservoir module
-  res_init();
+  //res_init();
 
   //Test the modules
   pass &= systemTest();

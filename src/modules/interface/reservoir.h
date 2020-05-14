@@ -30,64 +30,44 @@
 #ifndef __RESERVOIR_H__
 #define __RESERVOIR_H__
 
-#define RES_NUM_INPUTS	3
-#define RES_NUM_OUTPUTS	4
+#define RES_NUM_INPUTS 7
+#define RES_NUM_OUTPUTS 4
 
-typedef uint8_t res_index_t;
-typedef uint8_t res_neuron_count_t;
-typedef uint16_t res_connectivity_t;
+typedef float res_input_t;
+typedef float res_output_t;
 
-typedef uint8_t res_input_index_t;
-typedef uint8_t res_neuron_index_t;
-typedef uint8_t res_output_index_t;
-typedef uint16_t res_connection_index_t;
+typedef uint8_t neuron_count_t;
+typedef uint8_t neuron_index_t;
+typedef float neuron_value_t;
+typedef float neuron_gamma_t;
+typedef float neuron_bias_t;
+typedef float neuron_weight_t;
 
-typedef float res_weight_t;
+typedef struct neuron_weight_recur_s {
+	neuron_index_t index;
+	neuron_weight_t weight;
+} neuron_weight_recur_t;
 
-typedef struct res_input_connection_s {
-	res_weight_t weights[RES_NUM_INPUTS]; 
-} __attribute__((packed)) res_input_connection_t;
+typedef struct neuron_input_s {
+	neuron_gamma_t gamma;
+	neuron_bias_t bias;
+	neuron_weight_t weight_input[RES_NUM_INPUTS];
+	neuron_count_t num_recur;
+	neuron_weight_recur_t weight_recur[];
+} neuron_input_t;
 
-typedef struct res_internal_connection_s {
-	res_weight_t weight;
-	res_neuron_index_t input;
-	res_neuron_index_t output;
-} __attribute__((packed)) res_internal_connection_t;
-
-typedef struct res_output_connection_s {
-	res_weight_t weights[RES_NUM_OUTPUTS]; 
-} __attribute__((packed)) res_output_connection_t;
+typedef struct neuron_output_s {
+	neuron_weight_t weight[RES_NUM_OUTPUTS];
+} neuron_output_t;
 
 typedef struct reservoir_s {
-	res_neuron_count_t size;
-	res_connectivity_t connectivity;
-	res_neuron_index_t current_output;
-	res_input_connection_t *inputs;
-	res_internal_connection_t *internal;
-	res_output_connection_t *outputs;
+	neuron_count_t size;
+	neuron_input_t *input;
+	neuron_output_t *output;
 } reservoir_t;
 
-void res_init();
+void asdf(uint32_t x);
 
-void res_alloc_reservoir(res_index_t res, 
-	res_neuron_count_t size,
-	res_connectivity_t connectivity);
-
-void res_set_input_weight(res_index_t res,
-	res_input_index_t input, res_neuron_index_t neuron,
-	res_weight_t weight);
-
-void res_append_internal_weight(res_index_t res,
-	res_connection_index_t index,
-	res_neuron_index_t output, res_neuron_index_t input, 
-	res_weight_t weight);
-
-void res_set_output_weight(res_index_t res, 
-	res_output_index_t output, res_neuron_index_t neuron, 
-	res_weight_t weight);
-
-void res_compute_checksum();
-
-void res_clear();
+#define RES_SIGMOID_TABLE_SIZE 65536
 
 #endif //__RESERVOIR_H__

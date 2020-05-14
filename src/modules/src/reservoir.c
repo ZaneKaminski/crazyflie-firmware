@@ -24,118 +24,98 @@
  * reservoir.h - 
  */
 #include "reservoir.h"
+#include "res_sigmoid_table.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
 #include <string.h>
+#include <math.h>
+#include <assert.h>
 
 #include "log.h"
 
 #include "crtp_reservoir.h"
 
-#define RES_DATA_SIZE 65536
-#define RES_NUM_RESERVOIRS 16
+#define RES_SIGMOID_SATURATION_P 2
+#define RES_SIGMOID_SATURATION_I (1 << RES_SIGMOID_SATURATION_P)
+#define RES_SIGMOID_SATURATION_F ((float)RES_SIGMOID_SATURATION_I)
 
-static reservoir_t res_table[16];
-
-static void* const res_data = (void*)0x10000000;
-static void *res_index;
-uint32_t res_checksum;
-static bool isInit;
-
-void res_init() {
-	if(isInit) { return; }
-
-	res_clear();
-
-	crtpReservoirInit();
-
-	isInit = true;
+/* Returns the absolute value of the float x. */
+float res_abs(float x) {
+	// Ensure we are using the right abs routine.
+	// This amounts to one instruction and will be inlined.
+	return fabsf(x);
 }
 
-void res_alloc_reservoir(res_index_t res, res_neuron_count_t size, res_connectivity_t connectivity) {
-	res_table[res].size = size;
-	res_table[res].connectivity = connectivity;
+/* Returns the magnitude of float x with the sign of float s.
+ * Requires that x is positive. */
+float res_match_sign(float x, float s) {
+	// Get these to do bitwise manipulation of the float values
+	uint32_t ix = *(uint32_t*)&x;
+	uint32_t is = *(uint32_t*)&s;
 
-	res_table[res].inputs = (res_input_connection_t*)res_index;
+	// Conditionally set the sign bit of ix
+	ix |= is & 0x80000000;
 
-	res_table[res].outputs = (res_output_connection_t*)((void*)(res_table[res].inputs) +
-		sizeof(res_input_connection_t) * size);
-
-	res_table[res].internal = (res_internal_connection_t*)((void*)(res_table[res].outputs) +
-		sizeof(res_output_connection_t) * size);
-
-	res_index = (void*)(res_table[res].internal) + 
-		sizeof(res_internal_connection_t) * connectivity;
-
-	if (res_index > res_data + RES_DATA_SIZE) {
-		res_index = res_data + RES_DATA_SIZE;
-		res_table[res].size = 0;
-		res_table[res].connectivity = 0;
-	}
+	return *(float*)&ix;
 }
 
-void res_set_input_weight(res_index_t res,
-	res_input_index_t input, res_neuron_index_t neuron, 
-	res_weight_t weight) {
-	if (res < RES_NUM_RESERVOIRS && 
-		input < RES_NUM_INPUTS && neuron < res_table[res].size) {
-		res_table[res].inputs[neuron].weights[input] = weight;
-	}
-}
-
-void res_append_internal_weight(res_index_t res, res_connection_index_t index,
-	res_neuron_index_t output, res_neuron_index_t input, 
-	res_weight_t weight) {
-	if (res < RES_NUM_RESERVOIRS &&
-		index < res_table[res].connectivity &&
-		output < res_table[res].size && input < res_table[res].size &&
-		output >= res_table[res].current_output) {
-		res_table[res].current_output = output;
-		res_table[res].internal[index].input = input;
-		res_table[res].internal[index].output = output;
-		res_table[res].internal[index].weight = weight;
-	}
-}
-
-void res_set_output_weight(res_index_t res,
-	res_output_index_t output, res_neuron_index_t neuron,
-	res_weight_t weight) {
-	if (res < RES_NUM_RESERVOIRS && 
-		output < RES_NUM_OUTPUTS && neuron < res_table[res].size) {
-		res_table[res].outputs[neuron].weights[output] = weight;
-	}
-}
-
-void res_compute_checksum() {
-	uint32_t result = 0;
-	for (int i = 0; i < RES_DATA_SIZE; i++) { 
-		result = 0xFFFFFFFF & ((result ^ ((uint8_t*)res_data)[i]) + ((uint8_t*)res_data)[i]);
-	}
-	res_checksum = result;
-}
-
-void res_clear() {
-	res_checksum = 0;
-	res_index = res_data;
-
-	// Zero reservoir table
-	for (int i = 0; i < 16; i++) {
-		res_table[i] = (reservoir_t){0};
+float res_sigmoid(float x) {
+	// First we check if we should saturate rather than table lookup
+	if (res_abs(x) >= RES_SIGMOID_SATURATION_F) {
+		return res_match_sign(1.0f, x);
 	}
 
-	// Zero reservoir data
-	memset(res_data, 0, RES_DATA_SIZE);
+	// Compute the index in the lookup table
+	float indexf = res_abs(x) * RES_SIGMOID_TABLE_SIZE;
+	uint32_t index = ((uint32_t)indexf) >> RES_SIGMOID_SATURATION_P;
+
+	// Look up the result and return the sign-matched output
+	float y = res_sigmoid_table[index];
+	return res_match_sign(y, x);
 }
 
+void res_propagate(reservoir_t *res,
+	res_input_t *in, res_output_t *out,
+	neuron_value_t *old, neuron_value_t *new) {
+
+	// Clear the output values
+	for (int i = 0; i < RES_NUM_OUTPUTS; i++) { out[i] = 0.0f; }
+
+	// Pointer to the current neuron input descriptor
+	neuron_input_t *n = res->input;
+
+	// Update each neuron and its contribution to the output
+	for (int i = 0; i < res->size; i++) {
+		float sum = 0; // Sums passed to sigmoid function accumulated here
+
+		// Sum inputs
+		for (int j = 0; j < RES_NUM_INPUTS; j++) {
+			sum += n->weight_input[j] * in[j];
+		}
+		// Sum internal connections
+		for (int j = 0; j < n->num_recur; j++) {
+			sum += n->weight_recur[j].weight * old[n->weight_recur[j].index];
+		}
+
+		// Calculate new neuron value
+		new[i] = (1.0f - n->gamma) * old[i] + 
+			n->gamma * res_sigmoid(sum + n->bias);
+
+		// Accumulate contributions to outputs
+		for (int j = 0; j < RES_NUM_OUTPUTS; j++) {
+			out[j] += res->output[i].weight[j] * new[i];
+		}
+		
+		// Advance pointer to the neuron input descriptor.
+		char *nv = (char*)n + sizeof(neuron_input_t) + n->num_recur * 
+			(offsetof(neuron_input_t, weight_recur[1]) - 
+			 offsetof(neuron_input_t, weight_recur[0]));
+		n = (neuron_input_t*)nv;
+	}
+}
 
 LOG_GROUP_START(reservoir)
-LOG_ADD(LOG_UINT32, data, &res_data)
-LOG_ADD(LOG_UINT32, index, &res_index)
-LOG_ADD(LOG_UINT8, size0, (&(res_table[0].size)))
-LOG_ADD(LOG_UINT16, conn0, (&(res_table[0].connectivity)))
-LOG_ADD(LOG_UINT32, input0, (&(res_table[0].inputs)))
-LOG_ADD(LOG_UINT32, output0, (&(res_table[0].outputs)))
-LOG_ADD(LOG_UINT32, checksum, &res_checksum)
+
 LOG_GROUP_STOP(reservoir)

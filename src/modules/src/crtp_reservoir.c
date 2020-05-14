@@ -40,33 +40,7 @@ static void processReservoirPacket(CRTPPacket* pk)
 {
   if(pk->port == CRTP_PORT_RESERVOIR && pk->channel == 0) {
     switch ((crtp_reservoir_message_type_t)pk->data[0]) {
-      case CRTP_RESERVOIR_MESSAGE_ALLOC_RESERVOIR: {
-        crtp_reservoir_message_alloc_reservoir_t *m = 
-          (crtp_reservoir_message_alloc_reservoir_t*)pk->data;
-        res_alloc_reservoir(m->res, m->size, m->connectivity);
-        break; 
-      } case CRTP_RESERVOIR_MESSAGE_SET_INPUT: {
-        crtp_reservoir_message_set_input_t *m = 
-          (crtp_reservoir_message_set_input_t*)pk->data;
-        res_set_input_weight(m->res, m->input, m->neuron, m->weight);
-        break;
-      } case CRTP_RESERVOIR_MESSAGE_APPEND_INTENRAL: {
-        crtp_reservoir_message_append_internal_t *m = 
-          (crtp_reservoir_message_append_internal_t*)pk->data;
-        res_append_internal_weight(m->res, m->index, m->output, m->input, m->weight);
-        break;
-      } case CRTP_RESERVOIR_MESSAGE_SET_OUTPUT: {
-        crtp_reservoir_message_set_output_t *m = 
-          (crtp_reservoir_message_set_output_t*)pk->data;
-        res_set_output_weight(m->res, m->output, m->neuron, m->weight);
-        break;
-      } case CRTP_RESERVOIR_MESSAGE_COMPUTE_CHECKSUM: {
-        res_compute_checksum();
-        break;
-      } case CRTP_RESERVOIR_MESSAGE_CLEAR: {
-        res_clear();
-        break;
-      }
+      
     }
   }
 }

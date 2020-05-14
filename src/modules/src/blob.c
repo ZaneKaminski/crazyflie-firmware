@@ -25,13 +25,10 @@
  */
 #include "blob.h"
 
-#include <stdbool.h>
 #include <stdint.h>
-
 #include <string.h>
 
 #include "log.h"
-
 #include "crtp_blob.h"
 
 #define BLOB_DATA_SIZE 65536

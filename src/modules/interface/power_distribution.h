@@ -28,9 +28,24 @@
 
 #include "stabilizer_types.h"
 
+typedef struct motors_s {
+  uint32_t m1;
+  uint32_t m2;
+  uint32_t m3;
+  uint32_t m4;
+} motors_t;
+
+typedef struct motors_adj_s {
+  int32_t m1;
+  int32_t m2;
+  int32_t m3;
+  int32_t m4;
+} motors_adj_t;
+
 void powerDistributionInit(void);
 bool powerDistributionTest(void);
 void powerDistribution(const control_t *control);
+void powerDistributionWithAdjust(const control_t *control, motors_adj_t adj);
 void powerStop();
 
 

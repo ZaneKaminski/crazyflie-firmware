@@ -37,24 +37,23 @@ static bool isInit;
 static void processBlobPacket(CRTPPacket* pk)
 {
   if(pk->port == CRTP_PORT_BLOB && pk->channel == 0) {
-    switch ((crtp_blob_message_type_t)pk->data[0]) {
-      case CRTP_BLOB_MESSAGE_CLEAR: {
+    switch ((crtp_blob_msg_type_t)pk->data[0]) {
+      case CRTP_BLOB_MSG_CLEAR: {
         blob_clear();
         break;
-      } case CRTP_BLOB_MESSAGE_SET8: {
-        crtp_blob_message_set8_t *m = 
-          (crtp_blob_message_set8_t*)pk->data;
+      } case CRTP_BLOB_MSG_SET8: {
+        crtp_blob_msg_set8_t *m = 
+          (crtp_blob_msg_set8_t*)pk->data;
         blob_set32(m->addr, m->data);
         break; 
-      } case CRTP_BLOB_MESSAGE_SET32: {
-        crtp_blob_message_set32_t *m = 
-          (crtp_blob_message_set32_t*)pk->data;
+      } case CRTP_BLOB_MSG_SET32: {
+        crtp_blob_msg_set32_t *m = 
+          (crtp_blob_msg_set32_t*)pk->data;
         blob_set32(m->addr, m->data);
         break;
-      } case CRTP_BLOB_MESSAGE_SET_READBACK_ADDR: {
-        crtp_blob_message_set_readback_addr_t *m = 
-          (crtp_blob_message_set_readback_addr_t*)pk->data;
-        blob_set_readback_addr(m->addr);
+      } case CRTP_BLOB_MSG_READBACK: {
+        crtp_blob_msg_readback_t *m = (crtp_blob_msg_readback_t*)pk->data;
+        blob_readback(m->addr);
         break;
       }
     }

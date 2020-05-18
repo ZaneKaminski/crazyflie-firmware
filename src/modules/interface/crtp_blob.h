@@ -31,29 +31,29 @@
 #ifndef CRTP_BLOB_H_
 #define CRTP_BLOB_H_
 
-#define CRTP_BLOB_MESSAGE_CLEAR 0
-#define CRTP_BLOB_MESSAGE_SET8 1
-#define CRTP_BLOB_MESSAGE_SET32 2
-#define CRTP_BLOB_MESSAGE_SET_READBACK_ADDR 3
+#define CRTP_BLOB_MSG_CLEAR 0
+#define CRTP_BLOB_MSG_SET8 1
+#define CRTP_BLOB_MSG_SET32 2
+#define CRTP_BLOB_MSG_SET_READBACK_ADDR 3
 
-typedef uint8_t crtp_blob_message_type_t;
+typedef uint8_t crtp_blob_msg_type_t;
 
-typedef struct crtp_blob_message_alloc_set8_s {
-	crtp_blob_message_type_t type;
+typedef struct crtp_blob_msg_readback_s {
+	crtp_blob_msg_type_t type;
 	blob_addr_t addr;
 	uint8_t data;
-} __attribute__((packed)) crtp_blob_message_set8_t;
+} __attribute__((packed)) crtp_blob_msg_set8_t;
 
-typedef struct crtp_blob_message_set32_s {
-	crtp_blob_message_type_t type;
+typedef struct crtp_blob_msg_readback_s {
+	crtp_blob_msg_type_t type;
 	blob_addr_t addr;
 	uint32_t data;
-} __attribute__((packed)) crtp_blob_message_set32_t;
+} __attribute__((packed)) crtp_blob_msg_set32_t;
 
-typedef struct crtp_blob_message_set_readback_addr_s {
-	crtp_blob_message_type_t type;
+typedef struct crtp_blob_msg_readback_s {
+	crtp_blob_msg_type_t type;
 	blob_addr_t addr;
-} __attribute__((packed)) crtp_blob_message_set_readback_addr_t;
+} __attribute__((packed)) crtp_blob_msg_readback_t;
 
 void crtpBlobInit(void);
 

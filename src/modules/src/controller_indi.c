@@ -23,6 +23,7 @@
  * http://arc.aiaa.org/doi/pdf/10.2514/1.G001490
  */
 
+#include "power_distribution.h"
 #include "controller_indi.h"
 
 static float thrust_threshold = 300.0f;
@@ -130,7 +131,8 @@ bool controllerINDITest(void)
 	return pass;
 }
 
-void controllerINDI(control_t *control, setpoint_t *setpoint,
+void controllerINDI(control_t *control, motors_adj_t *adj,
+		setpoint_t *setpoint,
 		const sensorData_t *sensors,
 		const state_t *state,
 		const uint32_t tick)
@@ -299,6 +301,8 @@ void controllerINDI(control_t *control, setpoint_t *setpoint,
 	control->roll = indi.u_in.p;
 	control->pitch = indi.u_in.q;
 	control->yaw  = indi.u_in.r;
+
+	*adj = (motors_adj_t){0};
 }
 
 PARAM_GROUP_START(ctrlINDI)

@@ -2,6 +2,7 @@
 #include "debug.h"
 
 #include "cfassert.h"
+#include "power_distribution.h"
 #include "controller.h"
 #include "controller_pid.h"
 #include "controller_mellinger.h"
@@ -16,7 +17,10 @@ static void initController();
 typedef struct {
   void (*init)(void);
   bool (*test)(void);
-  void (*update)(control_t *control, setpoint_t *setpoint, const sensorData_t *sensors, const state_t *state, const uint32_t tick);
+  void (*update)(control_t *control, motors_adj_t *adj, 
+    setpoint_t *setpoint, 
+    const sensorData_t *sensors, const state_t *state, 
+    const uint32_t tick);
   const char* name;
 } ControllerFcns;
 
@@ -63,8 +67,8 @@ bool controllerTest(void) {
   return controllerFunctions[currentController].test();
 }
 
-void controller(control_t *control, setpoint_t *setpoint, const sensorData_t *sensors, const state_t *state, const uint32_t tick) {
-  controllerFunctions[currentController].update(control, setpoint, sensors, state, tick);
+void controller(control_t *control, motors_adj_t *adj, setpoint_t *setpoint, const sensorData_t *sensors, const state_t *state, const uint32_t tick) {
+  controllerFunctions[currentController].update(control, adj, setpoint, sensors, state, tick);
 }
 
 const char* controllerGetName() {

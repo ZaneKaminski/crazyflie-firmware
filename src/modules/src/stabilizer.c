@@ -279,14 +279,16 @@ static void stabilizerTask(void* param)
 
       sitAwUpdateSetpoint(&setpoint, &sensorData, &state);
 
-      controller(&control, &setpoint, &sensorData, &state, tick);
+      motors_adj_t adj;
+
+      controller(&control, &adj, &setpoint, &sensorData, &state, tick);
 
       checkEmergencyStopTimeout();
 
       if (emergencyStop) {
         powerStop();
       } else {
-        powerDistribution(&control);
+        powerDistributionWithAdjust(&control, adj);
       }
 
       // Log data to uSD card if configured

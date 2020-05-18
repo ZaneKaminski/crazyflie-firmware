@@ -41,6 +41,7 @@ We added the following:
 #include "log.h"
 #include "math3d.h"
 #include "position_controller.h"
+#include "power_distribution.h"
 #include "controller_mellinger.h"
 
 #define GRAVITY_MAGNITUDE (9.81f)
@@ -122,7 +123,8 @@ bool controllerMellingerTest(void)
   return true;
 }
 
-void controllerMellinger(control_t *control, setpoint_t *setpoint,
+void controllerMellinger(control_t *control, motors_adj_t *adj,
+                                         setpoint_t *setpoint,
                                          const sensorData_t *sensors,
                                          const state_t *state,
                                          const uint32_t tick)
@@ -320,6 +322,8 @@ void controllerMellinger(control_t *control, setpoint_t *setpoint,
 
     controllerMellingerReset();
   }
+
+  *adj = (motors_adj_t){0};
 }
 
 PARAM_GROUP_START(ctrlMel)

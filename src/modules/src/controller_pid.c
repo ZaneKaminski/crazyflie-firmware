@@ -5,6 +5,7 @@
 #include "attitude_controller.h"
 #include "sensfusion6.h"
 #include "position_controller.h"
+#include "power_distribution.h"
 #include "controller_pid.h"
 
 #include "log.h"
@@ -57,7 +58,8 @@ static float capAngle(float angle) {
   return result;
 }
 
-void controllerPid(control_t *control, setpoint_t *setpoint,
+void controllerPid(control_t *control, motors_adj_t *adj,
+                                         setpoint_t *setpoint,
                                          const sensorData_t *sensors,
                                          const state_t *state,
                                          const uint32_t tick)
@@ -150,6 +152,8 @@ void controllerPid(control_t *control, setpoint_t *setpoint,
     // Reset the calculated YAW angle for rate control
     attitudeDesired.yaw = state->attitude.yaw;
   }
+
+  *adj = (motors_adj_t){0};
 }
 
 

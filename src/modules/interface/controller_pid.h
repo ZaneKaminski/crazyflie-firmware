@@ -30,7 +30,8 @@
 
 void controllerPidInit(void);
 bool controllerPidTest(void);
-void controllerPid(control_t *control, setpoint_t *setpoint,
+void controllerPid(control_t *control, motors_adj_t *adj,
+                                         setpoint_t *setpoint,
                                          const sensorData_t *sensors,
                                          const state_t *state,
                                          const uint32_t tick);

@@ -55,16 +55,26 @@ void blob_clear(void) {
 	memset(blob_data, 0, BLOB_DATA_SIZE);
 }
 
-uint8_t blob_get8(blob_addr_t addr) { return *(uint8_t*)(blob_data + addr); }
+uint8_t blob_get8(blob_addr_t addr) {
+	// Bounds checking
+	if (addr < BLOB_DATA_SIZE) { return *(uint8_t*)(blob_data + addr); }
+	else { return 0; }
+}
 
-uint32_t blob_get32(blob_addr_t addr) { return *(uint32_t*)(blob_data + addr); }
+uint32_t blob_get32(blob_addr_t addr) {
+	// Bounds checking
+	if (addr < BLOB_DATA_SIZE) { return *(uint32_t*)(blob_data + addr); }
+	else { return 0; }
+}
 
 void blob_set8(blob_addr_t addr, uint8_t data) {
-	*(uint8_t*)(blob_data + addr) = data;
+	// Only set if in bounds
+	if (addr < BLOB_DATA_SIZE) { *(uint8_t*)(blob_data + addr) = data; }
 }
 
 void blob_set32(blob_addr_t addr, uint32_t data) {
-	*(uint8_t*)(blob_data + addr) = data;
+	// Only set if in bounds
+	if (addr < BLOB_DATA_SIZE) { *(uint32_t*)(blob_data + addr) = data; }
 }
 
 void blob_readback(blob_addr_t addr) {

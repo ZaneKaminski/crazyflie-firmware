@@ -77,7 +77,7 @@ void blob_set32(blob_addr_t addr, uint32_t data) {
 	if (addr < BLOB_DATA_SIZE) { *(uint32_t*)(blob_data + addr) = data; }
 }
 
-void blob_readback(blob_addr_t addr) {
+uint8_t blob_readback(blob_addr_t addr) {
 	return blob_readback_data = blob_get8(addr);
 }
 

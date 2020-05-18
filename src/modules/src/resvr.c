@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * reservoir.h - 
+ * resvr.h - 
  */
-#include "reservoir.h"
-#include "res_sigmoid_table.h"
+#include "resvr.h"
+#include "resvr_sigmoid_table.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -35,22 +35,22 @@
 
 #include "log.h"
 
-#include "crtp_reservoir.h"
+#include "crtp_resvr.h"
 
-#define RES_SIGMOID_SATURATION_P 2
-#define RES_SIGMOID_SATURATION_I (1 << RES_SIGMOID_SATURATION_P)
-#define RES_SIGMOID_SATURATION_F ((float)RES_SIGMOID_SATURATION_I)
+#define RESVR_SIGMOID_TABLE_SIZE 65536
 
-/* Returns the absolute value of the float x. */
-float res_abs(float x) {
-	// Ensure we are using the right abs routine.
-	// This amounts to one instruction and will be inlined.
-	return fabsf(x);
-}
+// Saturation parameters
+#define RESVR_SIGMOID_SAT_P 2
+#define RESVR_SIGMOID_SAT_I (1 << RESVR_SIGMOID_SAT_P)
+#define RESVR_SIGMOID_SAT_F ((float)RESVR_SIGMOID_SAT_I)
+
+
+// Use fabsf! This amounts to one instruction and will all be inlined.
+static inline float resvr_abs(float x) { return fabsf(x); }
 
 /* Returns the magnitude of float x with the sign of float s.
  * Requires that x is positive. */
-float res_match_sign(float x, float s) {
+static float resvr_match_sign(float x, float s) {
 	// Get these to do bitwise manipulation of the float values
 	uint32_t ix = *(uint32_t*)&x;
 	uint32_t is = *(uint32_t*)&s;
@@ -61,37 +61,37 @@ float res_match_sign(float x, float s) {
 	return *(float*)&ix;
 }
 
-float res_sigmoid(float x) {
+static float resvr_sigmoid(float x) {
 	// First we check if we should saturate rather than table lookup
-	if (res_abs(x) >= RES_SIGMOID_SATURATION_F) {
-		return res_match_sign(1.0f, x);
+	if (resvr_abs(x) >= RESVR_SIGMOID_SAT_F) {
+		return resvr_match_sign(1.0f, x);
 	}
 
 	// Compute the index in the lookup table
-	float indexf = res_abs(x) * RES_SIGMOID_TABLE_SIZE;
-	uint32_t index = ((uint32_t)indexf) >> RES_SIGMOID_SATURATION_P;
+	float indexf = resvr_abs(x) * RESVR_SIGMOID_TABLE_SIZE;
+	uint32_t index = ((uint32_t)indexf) >> RESVR_SIGMOID_SAT_P;
 
 	// Look up the result and return the sign-matched output
-	float y = res_sigmoid_table[index];
-	return res_match_sign(y, x);
+	float y = resvr_sigmoid_table[index];
+	return resvr_match_sign(y, x);
 }
 
-void res_propagate(reservoir_t *res,
-	res_input_t *in, res_output_t *out,
-	neuron_value_t *old, neuron_value_t *new) {
+void resvr_propagate(resvr_t *res,
+	resvr_input_t *in, resvr_output_t *out,
+	resvr_neuron_value_t *old, resvr_neuron_value_t *new) {
 
 	// Clear the output values
-	for (int i = 0; i < RES_NUM_OUTPUTS; i++) { out[i] = 0.0f; }
+	for (int i = 0; i < RESVR_NUM_OUTPUTS; i++) { out[i] = 0.0f; }
 
 	// Pointer to the current neuron input descriptor
-	neuron_input_t *n = res->input;
+	resvr_neuron_input_t *n = res->input;
 
 	// Update each neuron and its contribution to the output
 	for (int i = 0; i < res->size; i++) {
 		float sum = 0; // Sums passed to sigmoid function accumulated here
 
 		// Sum inputs
-		for (int j = 0; j < RES_NUM_INPUTS; j++) {
+		for (int j = 0; j < RESVR_NUM_INPUTS; j++) {
 			sum += n->weight_input[j] * in[j];
 		}
 		// Sum internal connections
@@ -101,21 +101,21 @@ void res_propagate(reservoir_t *res,
 
 		// Calculate new neuron value
 		new[i] = (1.0f - n->gamma) * old[i] + 
-			n->gamma * res_sigmoid(sum + n->bias);
+			n->gamma * resvr_sigmoid(sum + n->bias);
 
 		// Accumulate contributions to outputs
-		for (int j = 0; j < RES_NUM_OUTPUTS; j++) {
+		for (int j = 0; j < RESVR_NUM_OUTPUTS; j++) {
 			out[j] += res->output[i].weight[j] * new[i];
 		}
 		
 		// Advance pointer to the neuron input descriptor.
-		char *nv = (char*)n + sizeof(neuron_input_t) + n->num_recur * 
-			(offsetof(neuron_input_t, weight_recur[1]) - 
-			 offsetof(neuron_input_t, weight_recur[0]));
-		n = (neuron_input_t*)nv;
+		char *nv = (char*)n + sizeof(resvr_neuron_input_t) + n->num_recur * 
+			(offsetof(resvr_neuron_input_t, weight_recur[1]) - 
+			 offsetof(resvr_neuron_input_t, weight_recur[0]));
+		n = (resvr_neuron_input_t*)nv;
 	}
 }
 
-LOG_GROUP_START(reservoir)
+LOG_GROUP_START(resvr)
 
-LOG_GROUP_STOP(reservoir)
+LOG_GROUP_STOP(resvr)

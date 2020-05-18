@@ -42,13 +42,11 @@ static void processBlobPacket(CRTPPacket* pk)
         blob_clear();
         break;
       } case CRTP_BLOB_MSG_SET8: {
-        crtp_blob_msg_set8_t *m = 
-          (crtp_blob_msg_set8_t*)pk->data;
+        crtp_blob_msg_set8_t *m = (crtp_blob_msg_set8_t*)pk->data;
         blob_set32(m->addr, m->data);
         break; 
       } case CRTP_BLOB_MSG_SET32: {
-        crtp_blob_msg_set32_t *m = 
-          (crtp_blob_msg_set32_t*)pk->data;
+        crtp_blob_msg_set32_t *m = (crtp_blob_msg_set32_t*)pk->data;
         blob_set32(m->addr, m->data);
         break;
       } case CRTP_BLOB_MSG_READBACK: {

@@ -1,4 +1,4 @@
-const float res_sigmoid_table[65536] = 
+const float resvr_sigmoid_table[65536] = 
 {
 	0.0f, 6.1036087510991e-05f, 0.00012207217456721383f,
 	0.00018310826071390033f, 0.0002441443454962824f,

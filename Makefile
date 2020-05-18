@@ -165,7 +165,7 @@ PROJ_OBJ += log.o worker.o trigger.o sitaw.o queuemonitor.o msp.o
 PROJ_OBJ += platformservice.o sound_cf2.o extrx.o sysload.o mem.o
 PROJ_OBJ += range.o app_handler.o static_mem.o
 PROJ_OBJ += blob.o crtp_blob.o
-PROJ_OBJ += reservoir.o crtp_reservoir.o
+PROJ_OBJ += resvr.o crtp_resvr.o controller_resvr.o
 
 # Stabilizer modules
 PROJ_OBJ += commander.o crtp_commander.o crtp_commander_rpyt.o

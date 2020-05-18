@@ -34,17 +34,17 @@
 #define CRTP_BLOB_MSG_CLEAR 0
 #define CRTP_BLOB_MSG_SET8 1
 #define CRTP_BLOB_MSG_SET32 2
-#define CRTP_BLOB_MSG_SET_READBACK_ADDR 3
+#define CRTP_BLOB_MSG_READBACK 3
 
 typedef uint8_t crtp_blob_msg_type_t;
 
-typedef struct crtp_blob_msg_readback_s {
+typedef struct crtp_blob_msg_set8_s {
 	crtp_blob_msg_type_t type;
 	blob_addr_t addr;
 	uint8_t data;
 } __attribute__((packed)) crtp_blob_msg_set8_t;
 
-typedef struct crtp_blob_msg_readback_s {
+typedef struct crtp_blob_msg_set32_s {
 	crtp_blob_msg_type_t type;
 	blob_addr_t addr;
 	uint32_t data;
@@ -57,4 +57,4 @@ typedef struct crtp_blob_msg_readback_s {
 
 void crtpBlobInit(void);
 
-#endif /* CRTP_RESERVOIR_H_ */
+#endif /* CRTP_RESVR_H_ */

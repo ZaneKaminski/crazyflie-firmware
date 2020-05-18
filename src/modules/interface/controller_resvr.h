@@ -5,9 +5,9 @@
  * +------+    / /_/ / / /_/ /__/ /  / /_/ / / /_/  __/
  *  ||  ||    /_____/_/\__/\___/_/   \__,_/ /___/\___/
  *
- * Crazyflie Firmware
+ * Crazyflie control firmware
  *
- * Copyright (C) 2011-2017 Zane Kaminski
+ * Copyright (C) 2011-2016 Bitcraze AB
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,37 +21,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- *
+ * controller_resvr.h - Reservoir+PID Controller Interface
  */
-#include "crtp_reservoir.h"
+#ifndef __CONTROLLER_RESVR_H__
+#define __CONTROLLER_RESVR_H__
 
-#include "crtp.h"
+#include "stabilizer_types.h"
 
-#include <stdbool.h>
-#include <stdint.h>
+void controllerResvrInit(void);
+bool controllerResvrTest(void);
+void controllerResvr(control_t *control, setpoint_t *setpoint,
+                                         const sensorData_t *sensors,
+                                         const state_t *state,
+                                         const uint32_t tick);
 
-#include "log.h"
-#include "reservoir.h"
-#include "kalman_core.h"
-
-static bool isInit;
-
-static void processReservoirPacket(CRTPPacket* pk)
-{
-  if(pk->port == CRTP_PORT_RESERVOIR && pk->channel == 0) {
-    switch ((crtp_reservoir_message_type_t)pk->data[0]) {
-      
-    }
-  }
-}
-
-void crtpReservoirInit(void)
-{
-  if(isInit) { return; }
-  
-  crtpInit();
-
-  crtpRegisterPortCB(CRTP_PORT_RESERVOIR, processReservoirPacket);
-
-  isInit = true;
-}
+#endif //__CONTROLLER_RESVR_H__

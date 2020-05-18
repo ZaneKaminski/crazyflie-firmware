@@ -26,13 +26,40 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "reservoir.h"
+#include "resvr.h"
+#include "blob.h"
 
-#ifndef CRTP_RESERVOIR_H_
-#define CRTP_RESERVOIR_H_
+#ifndef CRTP_RESVR_H_
+#define CRTP_RESVR_H_
 
-typedef uint8_t crtp_reservoir_message_type_t;
+typedef uint8_t crtp_resvr_msg_type_t;
 
-void crtpReservoirInit(void);
+#define CRTP_RESVR_MSG_START 0
+#define CRTP_RESVR_MSG_SETSCALE 1
+#define CRTP_RESVR_MSG_STOP 2
 
-#endif /* CRTP_RESERVOIR_H_ */
+#define CRTP_RSVR_MAX_RESVRS 4
+typedef uint8_t resvr_id_t;
+
+typedef struct crtp_resvr_msg_start_s {
+	crtp_resvr_msg_type_t type;
+	resvr_id_t id;
+	resvr_neuron_count_t size;
+	blob_addr_t in;
+	blob_addr_t out;
+} crtp_resvr_msg_start_t;
+
+typedef struct crtp_resvr_msg_setscale_s {
+	crtp_resvr_msg_type_t type;
+	resvr_id_t id;
+	float scale;
+} crtp_resvr_msg_setscale_t;
+
+typedef struct crtp_resvr_msg_stop_s {
+	crtp_resvr_msg_type_t type;
+	resvr_id_t id;
+} crtp_resvr_msg_stop_t;
+
+void crtpResvrInit(void);
+
+#endif /* CRTP_RESVR_H_ */

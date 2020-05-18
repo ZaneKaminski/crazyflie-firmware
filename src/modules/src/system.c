@@ -68,7 +68,8 @@
 #include "static_mem.h"
 
 #include "blob.h"
-#include "reservoir.h"
+#include "resvr.h"
+#include "crtp_resvr.h"
 
 /* Private variable */
 static bool selftestPassed;
@@ -190,7 +191,7 @@ void systemTask(void *arg)
   blob_init();
 
   // Initialize the reservoir module
-  //res_init();
+  crtpResvrInit();
 
   //Test the modules
   pass &= systemTest();

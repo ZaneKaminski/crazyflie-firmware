@@ -35,7 +35,6 @@
 
 static bool blob_isInit;
 static void* const blob_data = (void*)0x10000000;
-static blob_addr_t blob_readback_addr;
 static uint8_t blob_readback_data;
 
 void blob_init(void) {
@@ -49,8 +48,7 @@ void blob_init(void) {
 }
 
 void blob_clear(void) {
-	// Zero readback stuff
-	blob_readback_addr = 0;
+	// Zero readback data
 	blob_readback_data = 0;
 
 	// Zero blob data
@@ -69,12 +67,10 @@ void blob_set32(blob_addr_t addr, uint32_t data) {
 	*(uint8_t*)(blob_data + addr) = data;
 }
 
-void blob_set_readback_addr(blob_addr_t addr) {
-	blob_readback_addr = addr;
-	blob_readback_data = blob_get8(addr);
+void blob_readback(blob_addr_t addr) {
+	return blob_readback_data = blob_get8(addr);
 }
 
 LOG_GROUP_START(blob)
-LOG_ADD(LOG_UINT16, readback_addr, &blob_readback_addr)
-LOG_ADD(LOG_UINT8, readback_data, &blob_readback_data)
+LOG_ADD(LOG_UINT8, readback_rd_data, &blob_readback_data)
 LOG_GROUP_STOP(blob)

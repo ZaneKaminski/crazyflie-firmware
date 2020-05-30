@@ -38,21 +38,47 @@ static bool isInit;
 
 resvr_t reservoirs[CRTP_RSVR_MAX_RESVRS];
 char reservoir_isactive[CRTP_RSVR_MAX_RESVRS];
+float reservoir_scale[CRTP_RSVR_MAX_RESVRS];
+int reservoir_paramids[CRTP_RSVR_MAX_RESVRS][RESVR_NUM_INPUTS];
 
 static void processResvrPacket(CRTPPacket* pk)
 {
   if(pk->port == CRTP_PORT_RESVR && pk->channel == 0) {
     switch ((crtp_resvr_msg_type_t)pk->data[0]) {
-      case CRTP_RESVR_MSG_START: {
-        crtp_resvr_msg_start_t *m = (crtp_resvr_msg_start_t*)pk->data;
-        if (m->id < CRTP_RSVR_MAX_RESVRS) { // Bounds check
-          // Enable reservoir propagation
-          reservoir_isactive[m->id] = 1;
+      case CRTP_RESVR_MSG_SETSIZE: {
+        crtp_resvr_msg_setsize_t *m = (crtp_resvr_msg_setsize_t*)pk->data;
+        if (m->id < CRTP_RSVR_MAX_RESVRS && !reservoir_isactive[m->id]) { // Bounds check & disabled check
+          // Set reservoir size
+          reservoirs[m->id].size = m->size;
+        }
+      } case CRTP_RESVR_MSG_SETINPUTLAYER: {
+        crtp_resvr_msg_setinputlayer_t *m = (crtp_resvr_msg_setinputlayer_t*)pk->data;
+        if (m->id < CRTP_RSVR_MAX_RESVRS && !reservoir_isactive[m->id]) { // Bounds check & disabled check
+          // Set reservoir input layer struct pointer
+          reservoirs[m->id].input = blob_getptr(m->input);
+        }
+      } case CRTP_RESVR_MSG_SETOUTPUTLAYER: {
+        crtp_resvr_msg_setoutputlayer_t *m =(crtp_resvr_msg_setoutputlayer_t*)pk->data;
+        if (m->id < CRTP_RSVR_MAX_RESVRS && !reservoir_isactive[m->id]) { // Bounds check & disabled check
+          // Set reservoir output layer struct pointer
+          reservoirs[m->id].output = blob_getptr(m->output);
+        }
+      } case CRTP_RESVR_MSG_SETINPUTPARAM: {
+        crtp_resvr_msg_setinputparam_t *m =(crtp_resvr_msg_setinputparam_t*)pk->data;
+        if (m->id < CRTP_RSVR_MAX_RESVRS && !reservoir_isactive[m->id]) { // Bounds check & disabled check
+          reservoir_paramids[m->id][m->index] = m->logid;
         }
       } case CRTP_RESVR_MSG_SETSCALE: {
         crtp_resvr_msg_setscale_t *m = (crtp_resvr_msg_setscale_t*)pk->data;
         if (m->id < CRTP_RSVR_MAX_RESVRS) { // Bounds check
-
+          // Set scale
+          reservoir_scale[m->id] = m->scale;
+        }
+      } case CRTP_RESVR_MSG_START: {
+        crtp_resvr_msg_start_t *m = (crtp_resvr_msg_start_t*)pk->data;
+        if (m->id < CRTP_RSVR_MAX_RESVRS) { // Bounds check
+          // Enable reservoir propagation
+          reservoir_isactive[m->id] = 1;
         }
       } case CRTP_RESVR_MSG_STOP: {
         crtp_resvr_msg_stop_t *m = (crtp_resvr_msg_stop_t*)pk->data;
@@ -70,8 +96,9 @@ void crtpResvrInit(void)
   if(isInit) { return; }
 
   // Clear reservoir data
-  memset(reservoir_isactive, 0, sizeof(reservoir_isactive));
   memset(reservoirs, 0, sizeof(reservoirs));
+  memset(reservoir_isactive, 0, sizeof(reservoir_isactive));
+  memset(reservoirs, 0, sizeof(reservoir_scale));
   
   crtpInit();
   crtpRegisterPortCB(CRTP_PORT_RESVR, processResvrPacket);

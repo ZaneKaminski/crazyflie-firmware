@@ -34,19 +34,45 @@
 
 typedef uint8_t crtp_resvr_msg_type_t;
 
-#define CRTP_RESVR_MSG_START 0
-#define CRTP_RESVR_MSG_SETSCALE 1
-#define CRTP_RESVR_MSG_STOP 2
+#define CRTP_RESVR_MSG_SETSIZE 0
+#define CRTP_RESVR_MSG_SETINPUTLAYER 1
+#define CRTP_RESVR_MSG_SETINPUTPARAM 2
+#define CRTP_RESVR_MSG_SETOUTPUTLAYER 3
+#define CRTP_RESVR_MSG_SETSCALE 4
+#define CRTP_RESVR_MSG_START 5
+#define CRTP_RESVR_MSG_STOP 6
 
 #define CRTP_RSVR_MAX_RESVRS 4
 typedef uint8_t resvr_id_t;
 
-typedef struct crtp_resvr_msg_start_s {
+typedef struct crtp_resvr_msg_setsize_s {
 	crtp_resvr_msg_type_t type;
 	resvr_id_t id;
 	resvr_neuron_count_t size;
-	blob_addr_t in;
-	blob_addr_t out;
+} crtp_resvr_msg_setsize_t;
+
+typedef struct crtp_resvr_msg_setinputlayer_s {
+	crtp_resvr_msg_type_t type;
+	resvr_id_t id;
+	blob_addr_t input;
+} crtp_resvr_msg_setinputlayer_t;
+
+typedef struct crtp_resvr_msg_setoutputlayer_s {
+	crtp_resvr_msg_type_t type;
+	resvr_id_t id;
+	blob_addr_t output;
+} crtp_resvr_msg_setoutputlayer_t;
+
+typedef struct crtp_resvr_msg_setinputparam_s {
+	crtp_resvr_msg_type_t type;
+	resvr_id_t id;
+	int index;
+	int logid;
+} crtp_resvr_msg_setinputparam_t;
+
+typedef struct crtp_resvr_msg_start_s {
+	crtp_resvr_msg_type_t type;
+	resvr_id_t id;
 } crtp_resvr_msg_start_t;
 
 typedef struct crtp_resvr_msg_setscale_s {

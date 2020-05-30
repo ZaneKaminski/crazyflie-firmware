@@ -40,6 +40,8 @@ uint32_t blob_get32(blob_addr_t addr);
 void blob_set8(blob_addr_t addr, uint8_t data);
 void blob_set32(blob_addr_t addr, uint32_t data);
 
+void *blob_getptr(blob_addr_t addr);
+
 uint8_t blob_readback(blob_addr_t addr);
 
 #endif //__BLOB_H__
